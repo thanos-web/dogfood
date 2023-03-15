@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import './styles.css';
 import { ReactComponent as likeIcon } from './assets/save.svg';
 
@@ -8,6 +9,7 @@ export function Card({
   weight,
   description,
   picture,
+  tags,
   ...props }) {
 
   const discount_price = Math.round(price - (price * discount) / 100);
@@ -17,6 +19,12 @@ export function Card({
       <div className='card__sticky card__sticky_type_top_left'>
         {discount !== 0 && (
           <span className='card__discount'>{`-${discount}%`}</span>
+        )}
+        {tags && tags.map(tagName => (
+          <span className={cn('tag', { [`tag_type_${tagName}`]: true })}>
+            {tagName}
+          </span>
+        )
         )}
         {/* discount !== 0 && условный рендеринг. Возвращает значение в спане если дискаунт не равен 0.
         если равен 0б то Возвращает false, а реакт не рендерит false, поэтому ничего не покажет если скидки нет */}

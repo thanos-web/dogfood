@@ -2,6 +2,8 @@ import React, { StrictMode } from 'react';
 import {createRoot} from 'react-dom/client';
 import {App} from './components/app';
 import './styles.css';
+import { AppMui } from './components/app-mui';
+import { AntApp } from './components/app-ant/index';
 
 
 // import FlashImageSrc from './images/flash_medium.png';
@@ -48,6 +50,7 @@ import './styles.css';
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
-root.render(<App />);
-
+root.render(<StrictMode><App /></StrictMode>);
+// root.render(<StrictMode><AntApp/></StrictMode>);
+// root.render(<StrictMode><AppMui /></StrictMode>);
 
