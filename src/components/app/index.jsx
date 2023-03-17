@@ -9,18 +9,28 @@ import { dataCard } from '../../data';
 // import './styles.css';
 import s from "./styles.module.css";
 import { Button } from '../button';
+import api from '../../utils/api';
+import { useDebounce } from '../../hooks/useDebounce';
+import { isLiked } from '../../utils/products';
 
 export function App() {
-
   // стейт для хранения карточек
-  const [cards, setCards] = useState(dataCard);
-  // стейт для хранения поискового запроса 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [cards, setCards] = useState([]);
+  const [currentUser, setCurrentUser] = useState([]);
+   // стейт для хранения поискового запроса 
+  const [searchQuery, setSearchQuery] = useState('');
+  const debounceSearchQuery = useDebounce(searchQuery, 300)
 
+  // console.log(debounceSearchQuery)
+  
+  
   function handleRequest() {
-    const filterCards = dataCard.filter(item => item.name.includes(searchQuery));
-    console.log(filterCards);
-    setCards(filterCards);
+    // const filterCards = dataCard.filter(item => item.name.includes(searchQuery));cardState
+    // setCards(filterCards);
+    api.search(debounceSearchQuery)
+      .then((dataSearch) => {
+        setCards(dataSearch);
+      })
   }
 
   function handleFormSubmit(e) {
@@ -32,19 +42,48 @@ export function App() {
     setSearchQuery(dataInput);
   }
 
-  // useEffect(() => {
-  //   handleRequest();
-  // }, [searchQuery]);
+  function handleUpdateUser(dataUserUpdate) {
+      api.setUserInfo(dataUserUpdate)
+      .then((updateUserFromServer) =>{
+        setCurrentUser(updateUserFromServer)
+      }
 
-  const margin = 40;
-  const headerStyle = {
-    color: "red",
-    margin: `${margin}px`,
+      )
   }
+
+  function handleProductLike(product) {
+    const like = isLiked(product.likes, currentUser._id)
+    api.changeLikeProductStatus(product._id, like)
+    .then((updateCard) => {
+      const newProducts = cards.map(cardState => {
+      return cardState._id === updateCard._id ? updateCard : cardState
+      })
+      setCards(newProducts)
+    }
+
+    )
+}
+
+  useEffect(() => {
+    handleRequest();
+  }, [debounceSearchQuery]);
+
+  useEffect(() => {
+
+    api.getAllInfo()
+    .then(([productsData, userInfoData]) => {
+      setCurrentUser(userInfoData);
+      setCards(productsData.products);
+    })
+    .catch(err => console.log(err))
+    
+
+},[])
+
 
   return (
     <>
-      <Header>
+      <Header user={currentUser} onUpdateUser={handleUpdateUser}>
         <Logo />
         <Search
           handleFormSubmit={handleFormSubmit}
@@ -52,14 +91,8 @@ export function App() {
         />
       </Header>
       <main className='content container'>
-        {/* <h1 style={headerStyle}>Стилизованный заголовок</h1>
-        <Button htmlType='button' type="primary" extraClass={s.button}>Купить</Button>
-        <Button htmlType='button' type="secondary">Отложить</Button>
-        <Button htmlType='button' type="error" extraClass={s.button}>Купить</Button> */}
-
-        <Button htmlType='button'>Купить</Button>
         <Sort />
-        <CardList goods={cards} />
+        <CardList goods={cards} onProductLike = {handleProductLike} currentUser = {currentUser}/>
       </main>
       <Footer />
     </>
