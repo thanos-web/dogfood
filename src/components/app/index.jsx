@@ -12,18 +12,22 @@ import { Button } from '../button';
 import api from '../../utils/api';
 import { useDebounce } from '../../hooks/useDebounce';
 import { isLiked } from '../../utils/products';
+import { CatalogPage } from '../../pages/catalog-page';
+import { ProductPage } from '../../pages/product-page';
+import FaqPage from '../../pages/faq-page';
 
 export function App() {
   // стейт для хранения карточек
   const [cards, setCards] = useState([]);
   const [currentUser, setCurrentUser] = useState([]);
-   // стейт для хранения поискового запроса 
+  // стейт для хранения поискового запроса 
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const debounceSearchQuery = useDebounce(searchQuery, 300)
 
   // console.log(debounceSearchQuery)
-  
-  
+
+
   function handleRequest() {
     // const filterCards = dataCard.filter(item => item.name.includes(searchQuery));cardState
     // setCards(filterCards);
@@ -43,8 +47,8 @@ export function App() {
   }
 
   function handleUpdateUser(dataUserUpdate) {
-      api.setUserInfo(dataUserUpdate)
-      .then((updateUserFromServer) =>{
+    api.setUserInfo(dataUserUpdate)
+      .then((updateUserFromServer) => {
         setCurrentUser(updateUserFromServer)
       }
 
@@ -54,31 +58,32 @@ export function App() {
   function handleProductLike(product) {
     const like = isLiked(product.likes, currentUser._id)
     api.changeLikeProductStatus(product._id, like)
-    .then((updateCard) => {
-      const newProducts = cards.map(cardState => {
-      return cardState._id === updateCard._id ? updateCard : cardState
-      })
-      setCards(newProducts)
-    }
+      .then((updateCard) => {
+        const newProducts = cards.map(cardState => {
+          return cardState._id === updateCard._id ? updateCard : cardState
+        })
+        setCards(newProducts)
+      }
 
-    )
-}
+      )
+  }
 
   useEffect(() => {
     handleRequest();
   }, [debounceSearchQuery]);
 
   useEffect(() => {
-
+    setIsLoading(true);
     api.getAllInfo()
-    .then(([productsData, userInfoData]) => {
-      setCurrentUser(userInfoData);
-      setCards(productsData.products);
-    })
-    .catch(err => console.log(err))
-    
+      .then(([productsData, userInfoData]) => {
+        setCurrentUser(userInfoData);
+        setCards(productsData.products);
+      })
+      .catch(err => console.log(err))
+      .finally(() => { setIsLoading(false) })
 
-},[])
+
+  }, [])
 
 
   return (
@@ -91,8 +96,9 @@ export function App() {
         />
       </Header>
       <main className='content container'>
-        <Sort />
-        <CardList goods={cards} onProductLike = {handleProductLike} currentUser = {currentUser}/>
+        <FaqPage />
+        <ProductPage />
+        <CatalogPage cards={cards} handleProductLike={handleProductLike} currentUser={currentUser} isLoading={isLoading} />
       </main>
       <Footer />
     </>

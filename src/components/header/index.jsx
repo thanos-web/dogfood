@@ -12,8 +12,11 @@ export function Header({children, user, onUpdateUser}) {
       <header className={s.header}>
         <div className={cn('container', s.wrapper)}>
         {children}
+        <div className={s.user}>
         <span>{user?.name}:{user?.about}</span>
         <span>{user?.email}</span>
+        </div>
+
         <Button action = {handleClickButtonEdit}>
           Изменить
         </Button>
