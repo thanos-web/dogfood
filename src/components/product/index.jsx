@@ -2,33 +2,36 @@ import cn from 'classnames';
 import s from './styles.module.css';
 import { calcDiscountPrice, isLiked } from '../../utils/products';
 import { Button } from '../button';
-import {ReactComponent as LikeIcon } from '../card/assets/save.svg';
+import { ReactComponent as LikeIcon } from '../card/assets/save.svg';
 import truck from "../../images/truck.svg";
 import quality from "../../images/quality.svg";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { UserContext } from '../../contexts/current-user-context';
+import { ContentHeader } from '../content-header';
 
-function Product({ onProductLike, _id, description, name, pictures, discount, price, likes = [], currentUser, reviews }) {
+function Product({ onProductLike, _id, description, name, pictures, discount, price, likes = [], reviews }) {
+
+    const { currentUser } = useContext(UserContext);
+
     const navigate = useNavigate();
     const location = useLocation();
-
     const discount_price = calcDiscountPrice(price, discount);
     const like = isLiked(likes, currentUser?._id);
 
     function HandleLikeClick() {
-        onProductLike({likes, _id})
+        onProductLike({ likes, _id })
     }
-    
+
     function createMarkupDescription() {
         return { __html: description };
     }
 
     return (
         <>
-            <div className={s.header}>
-                <a href='#' className='button-back' onClick={() => navigate(-1)}>Назад</a>
-                <h1 className='s.productTitle'>{name}</h1>
+            <ContentHeader textButton='Назад' title={name}>
                 <p className={s.articul}>Артикул: <b>2388907</b></p>
-            </div>
+            </ContentHeader>
             <div className={s.product}>
                 <div className={s.imgWrapper}>
                     <img src={pictures} alt={`Изображение ${name}`} />
@@ -51,10 +54,10 @@ function Product({ onProductLike, _id, description, name, pictures, discount, pr
                         <Button href="#" type="primary">В корзину</Button>
                     </div>
                     <button className={cn(s.favorite, { [s.favoriteActive]: like })} onClick={HandleLikeClick}>
-                        <LikeIcon/> 
-                        {like ? 'В избанном': 'В избранное'}
-                     </button>
-                     <div className={s.delivery}>
+                        <LikeIcon />
+                        {like ? 'В избанном' : 'В избранное'}
+                    </button>
+                    <div className={s.delivery}>
                         <img src={truck} alt="truck" />
                         <div className={s.right}>
                             <h3 className={s.name}>Доставка по всему Миру!</h3>
@@ -83,7 +86,7 @@ function Product({ onProductLike, _id, description, name, pictures, discount, pr
             </div>
             <div className={s.box}>
                 <h2 className={s.title}>Описание</h2>
-                <p className={s.subtitle}  dangerouslySetInnerHTML={createMarkupDescription()}></p>
+                <p className={s.subtitle} dangerouslySetInnerHTML={createMarkupDescription()}></p>
                 <h2 className={s.title}>Характеристики</h2>
                 <div className={s.grid}>
                     <div className={s.naming}>Вес</div>
