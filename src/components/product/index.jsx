@@ -6,14 +6,16 @@ import { ReactComponent as LikeIcon } from '../card/assets/save.svg';
 import truck from "../../images/truck.svg";
 import quality from "../../images/quality.svg";
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { UserContext } from '../../contexts/current-user-context';
 import { ContentHeader } from '../content-header';
+import { Rating } from '../rating';
+import { FormReview } from '../form-review';
 
 function Product({ onProductLike, _id, description, name, pictures, discount, price, likes = [], reviews }) {
 
     const { currentUser } = useContext(UserContext);
-
+    const [currentRating, setCurrentRating] = useState(5)
     const navigate = useNavigate();
     const location = useLocation();
     const discount_price = calcDiscountPrice(price, discount);
@@ -31,6 +33,7 @@ function Product({ onProductLike, _id, description, name, pictures, discount, pr
         <>
             <ContentHeader textButton='Назад' title={name}>
                 <p className={s.articul}>Артикул: <b>2388907</b></p>
+                <Rating currentRating={currentRating}/>
             </ContentHeader>
             <div className={s.product}>
                 <div className={s.imgWrapper}>
@@ -112,6 +115,8 @@ function Product({ onProductLike, _id, description, name, pictures, discount, pr
                     </div>
                 </div>
             </div>
+
+            <FormReview title={`Отзыв о товаре ${name}`}/>
         </>
     );
 }

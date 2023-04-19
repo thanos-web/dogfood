@@ -6,7 +6,7 @@ import { UserContext } from '../../contexts/current-user-context';
 import "./styles.css";
 import { ThemeContext } from '../../contexts/theme-context';
 import { CardsContext } from '../../contexts/card-context';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ReactComponent as FavoriteIcon } from './img/favorites.svg';
 
 export function Header({ children }) {
@@ -16,6 +16,7 @@ export function Header({ children }) {
   const handleClickButtonEdit = () => {
     onUpdateUser({ name: 'Татьяна', about: 'Студент' })
   }
+  const location = useLocation();
   return (
     <>
       <header className={s.header}>
@@ -26,6 +27,7 @@ export function Header({ children }) {
               <FavoriteIcon/>
               {favorites.length !== 0 && <span className={s.iconBubble}>{favorites.length}</span>}
             </Link>
+            <Link to='/login' replace state={{backgroundLocation: location, initialPath: location.pathname}}>Войти</Link>
           </div>
           {/* <div className={s.user}>
         <span>{currentUser?.name}:{currentUser?.about}</span>

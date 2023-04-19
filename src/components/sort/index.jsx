@@ -15,7 +15,8 @@ const { currentSort, setCurrentSort, onSortData} = useContext(CardsContext)
   return (
     <div className={s.sort}>
       {tabs.map( tab => (
-      <a className={cn(s.sort__link, {[s.sort__link_selected]: currentSort === tab.id})}
+      <a key={tab.id}
+      className={cn(s.sort__link, {[s.sort__link_selected]: currentSort === tab.id})}
       href="#"
       onClick={(e) => handleClickTab(e, tab)}>
       {tab.title}
