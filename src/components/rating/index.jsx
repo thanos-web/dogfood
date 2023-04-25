@@ -1,27 +1,27 @@
 import s from './styles.module.css';
-import { ReactComponent as StarIcon} from './img/star.svg';
+import { ReactComponent as StarIcon } from './img/star.svg';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import cn from 'classnames'
 
 const MAX_COUNT_RATING = 5;
 
-export function Rating({isEditable=false, currentRating, setCurrentRating}) {
+export function Rating({ isEditable = false, currentRating, setCurrentRating, error }) {
   const [ratingArray, setRatingArray] = useState(new Array(MAX_COUNT_RATING).fill(<></>))
 
   const constructRating = (filledRating) => {
-    const updateArray = ratingArray.map((ratingElement, index) =>{
+    const updateArray = ratingArray.map((ratingElement, index) => {
       return (
         <StarIcon
-        className={cn(s.star,
-          {
-            [s.filled]: index < filledRating,
-            [s.editable]: isEditable,
-          })}
+          className={cn(s.star,
+            {
+              [s.filled]: index < filledRating,
+              [s.editable]: isEditable,
+            })}
 
-          onMouseEnter={() => changeDisplay(index+1)}
+          onMouseEnter={() => changeDisplay(index + 1)}
           onMouseLeave={() => changeDisplay(currentRating)}
-          onClick ={() => changeRating(index+1)}
+          onClick={() => changeRating(index + 1)}
         />
       )
     })
@@ -42,9 +42,14 @@ export function Rating({isEditable=false, currentRating, setCurrentRating}) {
   useEffect(() => {
     constructRating(currentRating)
   }, [currentRating])
-  return (
 
-    ratingArray.map((r,i) => <span key={i}>{r}</span>)
+  return (
+    <>
+      {ratingArray.map((r, i) => <span key={i}>{r}</span>)}
+      {error && <span>{error?.massage}</span>}
+    </>
+
+
 
   );
 }

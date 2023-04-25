@@ -64,6 +64,14 @@ class Api {
         return Promise.all([this.getProductById(idProduct), this.getUserInfo()])
 
     }
+    setProductReveiwById(data, idProduct) {
+        return fetch(`${this.#baseurl}/products/review/${idProduct}`, {
+            method: 'POST',
+            headers: this.#headers,
+            body: JSON.stringify(data)
+        })
+            .then(this.#onResponse)
+    }
 }
 
 

@@ -12,7 +12,10 @@ import { ContentHeader } from '../content-header';
 import { Rating } from '../rating';
 import { FormReview } from '../form-review';
 
-function Product({ onProductLike, _id, description, name, pictures, discount, price, likes = [], reviews }) {
+
+
+
+function Product({ onProductLike, _id, description, name, pictures, discount, price, likes = [], reviews=[] }) {
 
     const { currentUser } = useContext(UserContext);
     const [currentRating, setCurrentRating] = useState(5)
@@ -33,7 +36,7 @@ function Product({ onProductLike, _id, description, name, pictures, discount, pr
         <>
             <ContentHeader textButton='Назад' title={name}>
                 <p className={s.articul}>Артикул: <b>2388907</b></p>
-                <Rating currentRating={currentRating}/>
+                <Rating currentRating={currentRating} />
             </ContentHeader>
             <div className={s.product}>
                 <div className={s.imgWrapper}>
@@ -115,8 +118,20 @@ function Product({ onProductLike, _id, description, name, pictures, discount, pr
                     </div>
                 </div>
             </div>
+            <div className={s.wrapperReview}>
+               {reviews.length > 0 && <h2>{`Oтзыв о товаре ${name}`}</h2>}
+                <div className={s.reviews}>
+                    {reviews.map((review, index) => (
+                     <div>
+                        <h4>{review.author.name}, {review.author.about}</h4>
+                        <Rating currentRating={review.rating}/>
+                        <p>{review.text}</p>
+                     </div>
+                    ))}
+                </div>
+            </div>
 
-            <FormReview title={`Отзыв о товаре ${name}`}/>
+            <FormReview title={`Создать отзыв о товаре ${name}`} idProduct={_id} />
         </>
     );
 }
