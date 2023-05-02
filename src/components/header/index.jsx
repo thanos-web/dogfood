@@ -8,13 +8,20 @@ import { ThemeContext } from '../../contexts/theme-context';
 import { CardsContext } from '../../contexts/card-context';
 import { Link, useLocation } from 'react-router-dom';
 import { ReactComponent as FavoriteIcon } from './img/favorites.svg';
+import { ReactComponent as LogoutIcon } from './img/logout.svg';
+import { ReactComponent as CartIcon } from './img/cart.svg';
+import { ReactComponent as ProfileIcon } from './img/profile.svg';
+import { ReactComponent as UserIcon } from './img/user.svg';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../storage/user/user-slice';
 
 export function Header({ children }) {
-  const { currentUser, onUpdateUser } = useContext(UserContext);
-  const { favorites } = useContext(CardsContext)
+  const currentUser = useSelector(state => state.user.data)
+  const favorites = useSelector(state => state.products.favoriteProducts)
+  const dispatch = useDispatch();
   const { toggleTheme } = useContext(ThemeContext)
   const handleClickButtonEdit = () => {
-    onUpdateUser({ name: 'Татьяна', about: 'Студент' })
+    // onUpdateUser({ name: 'Татьяна', about: 'Студент' })
   }
   const location = useLocation();
   return (
@@ -23,26 +30,32 @@ export function Header({ children }) {
         <div className={cn('container', s.wrapper)}>
           {children}
           <div className={s.iconsMenu}>
-            <Link className={s.favoritesLink} to={{pathname: '/favorites'}}>
-              <FavoriteIcon/>
+            <Link className={s.favoritesLink} to={{ pathname: '/favorites' }}>
+              <FavoriteIcon />
               {favorites.length !== 0 && <span className={s.iconBubble}>{favorites.length}</span>}
             </Link>
-            <Link to='/login' replace state={{backgroundLocation: location, initialPath: location.pathname}}>Войти</Link>
-          </div>
-          {/* <div className={s.user}>
-        <span>{currentUser?.name}:{currentUser?.about}</span>
-        <span>{currentUser?.email}</span>
-        </div>
 
-        <Button action = {handleClickButtonEdit}>
-          Изменить
-        </Button>
-          <label className="wraper" htmlFor="something">
-          <div className="switch-wrap">
-            <input type="checkbox" id="something" onChange={toggleTheme} />
-            <div className="switch"></div>
+            <Link className={s.favoritesLink} to={{ pathname: '/cart' }}>
+              <CartIcon />
+              {favorites.length !== 0 && <span className={s.iconBubble}>{favorites.length}</span>}
+            </Link>
+            {!currentUser && <Link to='/login' className={s.iconsMenuItem} replace state={{ backgroundLocation: location, initialPath: location.pathname }}>
+              <UserIcon />
+              Войти
+            </Link>}
+
+            {currentUser && <>
+              <Link to='/profile' className={s.iconsMenuItem}>
+                <ProfileIcon />
+                {currentUser?.name}
+              </Link>
+
+              <Link to='/' className={s.iconsMenuItem} onClick={()=>dispatch(logout)}>
+                <LogoutIcon />
+                Выйти
+              </Link>
+            </>}
           </div>
-        </label> */}
         </div>
 
       </header>

@@ -5,20 +5,20 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Form } from '../form';
 import FormButton from '../form-button';
 import FormInput from '../form-input';
-import s from './styles.module.css';
-import cn from 'classnames';
 import { Rating } from '../rating';
 import api from '../../utils/api';
+import { useDispatch } from 'react-redux';
+import { fetchCreateReview } from '../../storage/single-product/single-product-slice';
 
 
-export function FormReview({ title = 'Отзыв о товаре', idProduct, setProduct, onSubmit }) {
+export function FormReview({ title = 'Отзыв о товаре', productId}) {
 
-
+    const dispatch = useDispatch();
     const { register, control, handleSubmit, formState: { errors }, reset } = useForm({ mode: "onBlur" })
     // const [rating, setRating] = useState(5);
 
     const handleSubmitFormReview = (data) => {
-        api.setProductReveiwById(data, idProduct);
+        dispatch(fetchCreateReview({productId, data}));
         reset();
     }
 

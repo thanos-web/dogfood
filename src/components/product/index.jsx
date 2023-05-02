@@ -11,13 +11,15 @@ import { UserContext } from '../../contexts/current-user-context';
 import { ContentHeader } from '../content-header';
 import { Rating } from '../rating';
 import { FormReview } from '../form-review';
+import { useSelector } from 'react-redux';
+import { Review } from '../review';
 
 
 
 
-function Product({ onProductLike, _id, description, name, pictures, discount, price, likes = [], reviews=[] }) {
-
-    const { currentUser } = useContext(UserContext);
+function Product({ onProductLike }) {
+    const { _id, name, pictures, description, discount, price, likes = [], reviews } = useSelector(state => state.singleProduct.data)
+    const currentUser = useSelector(state => state.user.data)
     const [currentRating, setCurrentRating] = useState(5)
     const navigate = useNavigate();
     const location = useLocation();
@@ -118,20 +120,22 @@ function Product({ onProductLike, _id, description, name, pictures, discount, pr
                     </div>
                 </div>
             </div>
-            <div className={s.wrapperReview}>
-               {reviews.length > 0 && <h2>{`Oтзыв о товаре ${name}`}</h2>}
+            {/* <div className={s.wrapperReview}>
+                {reviews.length > 0 && <h2>{`Oтзыв о товаре ${name}`}</h2>}
                 <div className={s.reviews}>
                     {reviews.map((review, index) => (
-                     <div>
-                        <h4>{review.author.name}, {review.author.about}</h4>
-                        <Rating currentRating={review.rating}/>
-                        <p>{review.text}</p>
-                     </div>
+                        <div>
+                            <h4>{review.author.name}, {review.author.about}</h4>
+                            <Rating currentRating={review.rating} />
+                            <p>{review.text}</p>
+                        </div>
                     ))}
                 </div>
-            </div>
+            </div> */}
+            {reviews.length !== 0 && <div className={s.reviews}> {reviews.map(reviewData => <Review {...reviewData} />)}</div>}
 
-            <FormReview title={`Создать отзыв о товаре ${name}`} idProduct={_id} />
+
+            <FormReview title={`Создать отзыв о товаре ${name}`} productId={_id} />
         </>
     );
 }
