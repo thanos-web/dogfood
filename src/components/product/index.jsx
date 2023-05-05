@@ -6,28 +6,37 @@ import { ReactComponent as LikeIcon } from '../card/assets/save.svg';
 import truck from "../../images/truck.svg";
 import quality from "../../images/quality.svg";
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useContext, useState } from 'react';
-import { UserContext } from '../../contexts/current-user-context';
+import {  useState } from 'react';
 import { ContentHeader } from '../content-header';
 import { Rating } from '../rating';
 import { FormReview } from '../form-review';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Review } from '../review';
+import { addProductCart } from '../../storage/cart/cart-slice';
+import { ProductPrice } from '../product-price';
 
 
 
 
 function Product({ onProductLike }) {
-    const { _id, name, pictures, description, discount, price, likes = [], reviews } = useSelector(state => state.singleProduct.data)
+
+    const { _id, name, pictures, description, discount, price, likes = [], reviews, wight } = useSelector(state => state.singleProduct.data);
+    const addDataProduct = {_id, name, pictures, discount, price, wight};
     const currentUser = useSelector(state => state.user.data)
     const [currentRating, setCurrentRating] = useState(5)
     const navigate = useNavigate();
     const location = useLocation();
     const discount_price = calcDiscountPrice(price, discount);
     const like = isLiked(likes, currentUser?._id);
+    const dispatch = useDispatch();
 
     function HandleLikeClick() {
         onProductLike({ likes, _id })
+    }
+
+    function handleCartClick(e){
+        dispatch(addProductCart(addDataProduct))
+
     }
 
     function createMarkupDescription() {
@@ -45,21 +54,14 @@ function Product({ onProductLike }) {
                     <img src={pictures} alt={`Изображение ${name}`} />
                 </div>
                 <div className={s.desc}>
-                    {discount !== 0 ? (
-                        <>
-                            <span className={s.OldPrice}>{price}&nbsp;₽</span>
-                            <span className={cn(s.price, s.price_discount)}>{discount_price}&nbsp;₽</span>
-                        </>
-                    ) : (
-                        <span className={s.price}>{price}&nbsp;₽</span>
-                    )}
+                <ProductPrice discount={discount} price={price} type="big" />
                     <div className={s.btnWrap}>
                         <div className={s.left}>
                             <button className={s.minus}>-</button>
                             <span className={s.num}>0</span>
                             <button className={s.plus}>+</button>
                         </div>
-                        <Button href="#" type="primary">В корзину</Button>
+                        <Button href="#" type="primary" action={handleCartClick}>В корзину</Button>
                     </div>
                     <button className={cn(s.favorite, { [s.favoriteActive]: like })} onClick={HandleLikeClick}>
                         <LikeIcon />

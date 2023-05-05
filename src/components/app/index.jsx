@@ -28,11 +28,12 @@ import { checkTokenUser, fetchUser, loginUser, registerUser } from '../../storag
 import { MainPage } from '../../pages/main-page';
 import { ProtectedRoute } from '../protected-route';
 import { getLocalData } from '../../utils/localStorage';
+import CartPage from '../../pages/cart-page';
 
 
 
 export function App() {
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [theme, setTheme] = useState(themes.light);
   const debounceSearchQuery = useDebounce(searchQuery, 300);
@@ -176,6 +177,11 @@ export function App() {
               <ProductPage />
             </ProtectedRoute>
           } />
+          <Route path='/cart' element={
+            <ProtectedRoute>
+              <CartPage />
+            </ProtectedRoute>
+          } />
           <Route path='/dnd' element={<DnDPage />} />
           <Route path='/login' element={
             <ProtectedRoute onlyUnAuth><Login onSubmit={cbSubmitFormLogin} onNavigateRegister={handleClickButtonRegisterNotModal} onNavigateReset={handleClickButtonResetNotModal} /></ProtectedRoute>
@@ -191,42 +197,42 @@ export function App() {
       </main>
       <Footer />
       {backgroundLocation && <Routes>
-                <Route path='/login' element={
-                    <ProtectedRoute onlyUnAuth>
-                        <Modal isOpen onClose={onCloseRoutingModal}>
-                            <Login onSubmit={cbSubmitFormLogin} onNavigateRegister={handleClickButtonRegister} onNavigateReset={handleClickButtonReset} />
-                        </Modal>
-                    </ProtectedRoute>
-                } />
-                <Route path='/register' element={
-                    <ProtectedRoute onlyUnAuth>
-                        <Modal isOpen onClose={onCloseRoutingModal}>
-                            <Register onSubmit={cbSubmitFormLoginRegister} onNavigateLogin={handleClickButtonLogin} />
-                        </Modal>
-                    </ProtectedRoute>
-                } />
-                <Route path='/reset-password' element={
-                    <ProtectedRoute onlyUnAuth>
-                        <Modal isOpen onClose={onCloseRoutingModal}>
-                            <ResetPassword onSubmit={cbSubmitFormResetPassword} />
-                        </Modal>
-                    </ProtectedRoute>
-                } />
+        <Route path='/login' element={
+          <ProtectedRoute onlyUnAuth>
+            <Modal isOpen onClose={onCloseRoutingModal}>
+              <Login onSubmit={cbSubmitFormLogin} onNavigateRegister={handleClickButtonRegister} onNavigateReset={handleClickButtonReset} />
+            </Modal>
+          </ProtectedRoute>
+        } />
+        <Route path='/register' element={
+          <ProtectedRoute onlyUnAuth>
+            <Modal isOpen onClose={onCloseRoutingModal}>
+              <Register onSubmit={cbSubmitFormLoginRegister} onNavigateLogin={handleClickButtonLogin} />
+            </Modal>
+          </ProtectedRoute>
+        } />
+        <Route path='/reset-password' element={
+          <ProtectedRoute onlyUnAuth>
+            <Modal isOpen onClose={onCloseRoutingModal}>
+              <ResetPassword onSubmit={cbSubmitFormResetPassword} />
+            </Modal>
+          </ProtectedRoute>
+        } />
 
-                <Route path='/dnd' element={
-                    <ProtectedRoute>
-                        <Modal isOpen onClose={onCloseRoutingModal}>
-                            <DnDPage />
-                        </Modal>
-                    </ProtectedRoute>
-                }  />
-                <Route path='/dnd' element={
-                    <ProtectedRoute>
-                        <Modal isOpen onClose={onCloseRoutingModal}>
-                            <DnDPage />
-                        </Modal>
-                    </ProtectedRoute>
-                } />
+        <Route path='/dnd' element={
+          <ProtectedRoute>
+            <Modal isOpen onClose={onCloseRoutingModal}>
+              <DnDPage />
+            </Modal>
+          </ProtectedRoute>
+        } />
+        <Route path='/dnd' element={
+          <ProtectedRoute>
+            <Modal isOpen onClose={onCloseRoutingModal}>
+              <DnDPage />
+            </Modal>
+          </ProtectedRoute>
+        } />
       </Routes>}
 
     </ThemeContext.Provider>

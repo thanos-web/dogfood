@@ -1,5 +1,4 @@
 import { useSelector } from "react-redux"
-import { Card } from "../../components/card"
 import { CardList } from "../../components/card-list"
 import { Carousel } from "../../components/carusel"
 import { ContentHeader } from "../../components/content-header"
