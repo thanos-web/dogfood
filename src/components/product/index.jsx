@@ -1,19 +1,21 @@
 import cn from 'classnames';
 import s from './styles.module.css';
-import { calcDiscountPrice, isLiked } from '../../utils/products';
+import { calcDiscountPrice, checkProductInCart, isLiked } from '../../utils/products';
 import { Button } from '../button';
 import { ReactComponent as LikeIcon } from '../card/assets/save.svg';
 import truck from "../../images/truck.svg";
 import quality from "../../images/quality.svg";
 import { useLocation, useNavigate } from 'react-router-dom';
-import {  useState } from 'react';
+import { useState } from 'react';
 import { ContentHeader } from '../content-header';
 import { Rating } from '../rating';
 import { FormReview } from '../form-review';
 import { useDispatch, useSelector } from 'react-redux';
 import { Review } from '../review';
-import { addProductCart } from '../../storage/cart/cart-slice';
+import { addProductCart, changeCartQuantity, decrementQuantity, incrementQuantity } from '../../storage/cart/cart-slice';
 import { ProductPrice } from '../product-price';
+import ButtonCount from '../button-count/button-count';
+import { useAppSelector } from '../../storage/hook';
 
 
 
@@ -21,20 +23,24 @@ import { ProductPrice } from '../product-price';
 function Product({ onProductLike }) {
 
     const { _id, name, pictures, description, discount, price, likes = [], reviews, wight } = useSelector(state => state.singleProduct.data);
-    const addDataProduct = {_id, name, pictures, discount, price, wight};
+    const addDataProduct = { _id, name, pictures, discount, price, wight };
+    const cartProducts = useAppSelector(state => state.cart.data)
     const currentUser = useSelector(state => state.user.data)
     const [currentRating, setCurrentRating] = useState(5)
     const navigate = useNavigate();
     const location = useLocation();
     const discount_price = calcDiscountPrice(price, discount);
     const like = isLiked(likes, currentUser?._id);
+
+
+    const productInCartInfo = checkProductInCart(cartProducts, _id)
     const dispatch = useDispatch();
 
     function HandleLikeClick() {
         onProductLike({ likes, _id })
     }
 
-    function handleCartClick(e){
+    function handleCartClick(e) {
         dispatch(addProductCart(addDataProduct))
 
     }
@@ -54,14 +60,17 @@ function Product({ onProductLike }) {
                     <img src={pictures} alt={`Изображение ${name}`} />
                 </div>
                 <div className={s.desc}>
-                <ProductPrice discount={discount} price={price} type="big" />
+                    <ProductPrice discount={discount} price={price} type="big" />
                     <div className={s.btnWrap}>
                         <div className={s.left}>
-                            <button className={s.minus}>-</button>
-                            <span className={s.num}>0</span>
-                            <button className={s.plus}>+</button>
+                            <ButtonCount
+                                amount={productInCartInfo.quantity}
+                                handleIncrement={() => { dispatch(incrementQuantity(addDataProduct)) }}
+                                handleDecrement={() => { dispatch(decrementQuantity(addDataProduct)) }}
+                                handleCountChange={(newQuantity) => { dispatch(changeCartQuantity({ ...addDataProduct, quantity: newQuantity })) }}
+                             />
                         </div>
-                        <Button href="#" type="primary" action={handleCartClick}>В корзину</Button>
+                        <Button href="#" type="primary" action={handleCartClick}>{!productInCartInfo.quantity || productInCartInfo.quantity === 0 ? "В корзину" : "Добавлено"}</Button>
                     </div>
                     <button className={cn(s.favorite, { [s.favoriteActive]: like })} onClick={HandleLikeClick}>
                         <LikeIcon />

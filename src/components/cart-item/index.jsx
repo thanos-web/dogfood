@@ -4,7 +4,7 @@ import { ReactComponent as TrashIcon } from './img/trash.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import GiftLabel from '../gift-label/gift-label';
-import ButtonCount from '../button-count';
+import ButtonCount from '../button-count/button-count';
 import { ProductPrice } from '../product-price';
 import { changeCartQuantity, decrementQuantity, incrementQuantity, removeProductCart } from '../../storage/cart/cart-slice';
 

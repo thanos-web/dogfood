@@ -1,26 +1,28 @@
 import cn from 'classnames';
-import s from './styles.module.css';
-import { Button } from '../button';
-import { useContext } from 'react';
-import { UserContext } from '../../contexts/current-user-context';
-import "./styles.css";
-import { ThemeContext } from '../../contexts/theme-context';
-import { CardsContext } from '../../contexts/card-context';
 import { Link, useLocation } from 'react-router-dom';
+import { useDispatch,  } from 'react-redux';
+
 import { ReactComponent as FavoriteIcon } from './img/favorites.svg';
 import { ReactComponent as LogoutIcon } from './img/logout.svg';
 import { ReactComponent as CartIcon } from './img/cart.svg';
 import { ReactComponent as ProfileIcon } from './img/profile.svg';
 import { ReactComponent as UserIcon } from './img/user.svg';
-import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../storage/user/user-slice';
 
-export function Header({ children }) {
-  const currentUser = useSelector(state => state.user.data)
-  const favorites = useSelector(state => state.products.favoriteProducts)
-  const { totalCountProducts} = useSelector(state => state.cart)
+import "./styles.css";
+import s from './styles.module.css';
+import { useAppSelector } from '../../storage/hook';
+import { ReactNode } from 'react';
+
+interface IHeaderProps {
+  children: ReactNode
+}
+// export const Header: FC<IHeaderProps> = ({children})=>{
+export function Header({ children }: IHeaderProps) {
+  const currentUser = useAppSelector(state => state.user.data)
+  const favorites = useAppSelector(state => state.products.favoriteProducts)
+  const { totalCountProducts} = useAppSelector(state => state.cart)
   const dispatch = useDispatch();
-  const { toggleTheme } = useContext(ThemeContext)
   const handleClickButtonEdit = () => {
     // onUpdateUser({ name: 'Татьяна', about: 'Студент' })
   }

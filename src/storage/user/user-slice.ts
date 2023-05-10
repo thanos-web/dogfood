@@ -1,8 +1,25 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, SerializedError } from "@reduxjs/toolkit";
+import { TUserResponseDto, UserAuthBodyDto, UserBodyDto, UserRegisterBodyDto } from "../../utils/api";
 import { setLocalData } from "../../utils/localStorage";
+import { createAppAsyncThunk } from "../hook";
 
 
-const initialState = {
+type TUserState = {
+    isAuthChecked: boolean,
+    data: any,
+
+    registerUserRequest: boolean,
+    registerUserError: SerializedError | null | unknown,
+
+    loginUserRequest: boolean,
+    loginUserError: SerializedError | null | unknown,
+
+    checkTokenUserRequest: boolean,
+    checkTokenUserError: SerializedError | null | unknown,
+
+}
+
+const initialState: TUserState = {
     isAuthChecked: false,
     data: null,
 
@@ -14,29 +31,11 @@ const initialState = {
 
     checkTokenUserRequest: false,
     checkTokenUserError: null,
-
-    fetchUserRequest: false,
-    fetchUserError: null,
 }
 
 export const sliceName = 'user';
 
-export const fetchUser = createAsyncThunk(
-    `${sliceName}/fetchUser`,
-    async function (_, { fulfillWithValue, rejectWithValue, extra: api }) {
-
-        try {
-            const data = await api.getUserInfo();
-            return fulfillWithValue(data);
-        }
-
-        catch (err) {
-            return rejectWithValue(err)
-        }
-    }
-)
-
-export const registerUser = createAsyncThunk(
+export const registerUser = createAppAsyncThunk <TUserResponseDto, UserRegisterBodyDto>(
     `${sliceName}/registerUser`,
     async function (dataUser, { fulfillWithValue, rejectWithValue, extra: api }) {
 
@@ -51,18 +50,19 @@ export const registerUser = createAsyncThunk(
     }
 )
 
-export const loginUser = createAsyncThunk(
+export const loginUser = createAppAsyncThunk<TUserResponseDto, UserAuthBodyDto>(
     `${sliceName}/loginUser`,
     async function (dataUser, { fulfillWithValue, rejectWithValue, extra: api }) {
 
         try {
             const data = await api.authorize(dataUser);
             if (data.token) {
-                setLocalData('token', data.token)
+                setLocalData('token', data.token);
+                return fulfillWithValue(data.data);
             } else {
                 return rejectWithValue(data)
             }
-            return fulfillWithValue(data.data);
+
         }
 
         catch (err) {
@@ -70,7 +70,7 @@ export const loginUser = createAsyncThunk(
         }
     }
 )
-export const checkTokenUser = createAsyncThunk(
+export const checkTokenUser = createAppAsyncThunk<TUserResponseDto, string>(
     `${sliceName}/checkTokenUser`,
     async function (token, { fulfillWithValue, rejectWithValue, extra: api, dispatch }) {
 
@@ -105,19 +105,6 @@ const userSlice = createSlice({
 
     extraReducers: (builder) => {
         builder
-            .addCase(fetchUser.pending, (state) => {
-                state.fetchUserRequest = true;
-                state.fetchUserError = null;
-            })
-            .addCase(fetchUser.fulfilled, (state, action) => {
-                state.data = action.payload;
-                state.fetchUserRequest = false;
-            })
-            .addCase(fetchUser.rejected, (state, action) => {
-                state.fetchUserError = action.payload;
-                state.fetchUserRequest = false;
-            })
-
 
             .addCase(registerUser.pending, (state) => {
                 state.registerUserRequest = true;
